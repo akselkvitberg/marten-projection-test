@@ -13,8 +13,6 @@ public class Writer(ILogger<Writer> logger, IServiceProvider serviceProvider) : 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)    {
         var timer = new PeriodicTimer(TimeSpan.FromMilliseconds(10));
 
-        await CreateBox();
-
         for (var i = 0; i < 100000; i++)
         {
             await timer.WaitForNextTickAsync(cancellationToken);
@@ -30,25 +28,8 @@ public class Writer(ILogger<Writer> logger, IServiceProvider serviceProvider) : 
                 session.Events.Append(RandomBox.Id, new AddItem(i));
             }
             
-            if (Random.Shared.Next(500) == 0)
-            {
-                logger.LogInformation("Deleting box", i);
-                session.Events.Append(RandomBox.Id, new DeleteBox());
-            }
-            
-            
-            
             await session.SaveChangesAsync(cancellationToken);
         }
-    }
-
-    private async Task CreateBox()
-    {
-        using var scope = serviceProvider.CreateScope();
-        await using var session = scope.ServiceProvider.GetRequiredService<IDocumentSession>();
-            
-        session.Events.Append(RandomBox.Id , new BoxCreated());
-        await session.SaveChangesAsync();
     }
 }
 

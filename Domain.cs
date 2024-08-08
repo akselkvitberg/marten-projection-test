@@ -17,8 +17,6 @@ public class BoxAggregate
 }
 
 public record AddItem(int Id);
-public record DeleteBox();
-public record BoxCreated();
 
 public class BoxSimple
 {
@@ -47,16 +45,6 @@ public class BoxFull
 
 public class BoxSimpleProjection : SingleStreamProjection<BoxSimple>
 {
-    public BoxSimpleProjection()
-    {
-        DeleteEvent<DeleteBox>();
-    }
-
-    public BoxSimple Create(BoxCreated box)
-    {
-        return new BoxSimple();
-    }
-    
     public void Apply(AddItem @event, BoxSimple box)
     {
         box.Items++;
